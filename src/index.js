@@ -1,11 +1,11 @@
 if (process.env.NODE_ENV === 'production') {
-  require('@instana/collector')();
+  require('@instana/collector')()
 }
 
 const path = require('path')
 const fs = require('fs')
 
-const description = fs.readFileSync(path.join(__dirname, 'pullRequestDescription.md'), {encoding: 'utf8'})
+const description = fs.readFileSync(path.join(__dirname, 'pullRequestDescription.md'), { encoding: 'utf8' })
 const changeSourceRegEx = /release-\d+/i
 const branchReferencePrefix = 'refs/heads/'
 
@@ -29,7 +29,7 @@ module.exports = app => {
       return
     }
 
-    const base = context.payload.repository.default_branch;
+    const base = context.payload.repository.default_branch
 
     try {
       await context.github.pullRequests.create({
