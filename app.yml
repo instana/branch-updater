@@ -1,0 +1,10 @@
+name: branch-updater
+url: https://github.com/instana/branch-updater
+description: A GitHub App which ensures that your main development branch is up to date.
+public: false
+default_events:
+  - push
+default_permissions:
+  contents: read
+  metadata: read
+  pull_requests: write
