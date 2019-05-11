@@ -1,6 +1,9 @@
+if (process.env.NODE_ENV === 'production') {
+  require('@instana/collector')();
+}
+
 const path = require('path')
 const fs = require('fs')
-
 
 const description = fs.readFileSync(path.join(__dirname, 'pullRequestDescription.md'), {encoding: 'utf8'})
 const changeSourceRegEx = /release-\d+/i
@@ -45,7 +48,7 @@ module.exports = app => {
         e.message.indexOf('No commits between') !== -1 ||
           e.message.indexOf('A pull request already exists for') !== -1)
       if (!isIgnorableError) {
-        console.error('Failed…', context, e)
+        app.log('Failed to create PR', context, e)
         throw e
       }
     }

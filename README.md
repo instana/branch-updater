@@ -1,6 +1,6 @@
 # branch-updater
 
-> A GitHub App which ensures that your main development is kept up to date.
+> A GitHub App which ensures that your main development branch is up to date.
 
 ## Setup
 
