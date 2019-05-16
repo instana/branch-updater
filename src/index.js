@@ -6,7 +6,7 @@ const path = require('path')
 const fs = require('fs')
 
 const description = fs.readFileSync(path.join(__dirname, 'pullRequestDescription.md'), { encoding: 'utf8' })
-const changeSourceRegEx = /release-\d+/i
+const changeSourceRegEx = /^release-\d+$/i
 const branchReferencePrefix = 'refs/heads/'
 
 module.exports = app => {
