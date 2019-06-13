@@ -1,0 +1,80 @@
+[
+  {
+    "name": "master",
+    "commit": {
+      "sha": "142290146383f236c8e7e3f16bca2b90d97b3d4c",
+      "url": "https://api.github.com/repos/Dalje-et/ProbotTestApp/commits/142290146383f236c8e7e3f16bca2b90d97b3d4c"
+    },
+    "protected": "false",
+    "protection": {
+      "enabled": false,
+      "required_status_checks": ""
+    },
+    "protection_url": "https://api.github.com/repos/Dalje-et/ProbotTestApp/branches/master/protection"
+  },
+  {
+    "name": "release-147",
+    "commit": {
+      "sha": "142290146383f236c8e7e3f16bca2b90d97b3d4c",
+      "url": "https://api.github.com/repos/Dalje-et/ProbotTestApp/commits/142290146383f236c8e7e3f16bca2b90d97b3d4c"
+    },
+    "protected": "false",
+    "protection": {
+      "enabled": false,
+      "required_status_checks": ""
+    },
+    "protection_url": "https://api.github.com/repos/Dalje-et/ProbotTestApp/branches/master/protection"
+  },
+  {
+    "name": "release-149",
+    "commit": {
+      "sha": "142290146383f236c8e7e3f16bca2b90d97b3d4c",
+      "url": "https://api.github.com/repos/Dalje-et/ProbotTestApp/commits/142290146383f236c8e7e3f16bca2b90d97b3d4c"
+    },
+    "protected": "false",
+    "protection": {
+      "enabled": false,
+      "required_status_checks": ""
+    },
+    "protection_url": "https://api.github.com/repos/Dalje-et/ProbotTestApp/branches/master/protection"
+  },
+  {
+    "name": "releae-150",
+    "commit": {
+      "sha": "142290146383f236c8e7e3f16bca2b90d97b3d4c",
+      "url": "https://api.github.com/repos/Dalje-et/ProbotTestApp/commits/142290146383f236c8e7e3f16bca2b90d97b3d4c"
+    },
+    "protected": "false",
+    "protection": {
+      "enabled": false,
+      "required_status_checks": ""
+    },
+    "protection_url": "https://api.github.com/repos/Dalje-et/ProbotTestApp/branches/master/protection"
+  },
+  {
+    "name": "release-151",
+    "commit": {
+      "sha": "142290146383f236c8e7e3f16bca2b90d97b3d4c",
+      "url": "https://api.github.com/repos/Dalje-et/ProbotTestApp/commits/142290146383f236c8e7e3f16bca2b90d97b3d4c"
+    },
+    "protected": "false",
+    "protection": {
+      "enabled": false,
+      "required_status_checks": ""
+    },
+    "protection_url": "https://api.github.com/repos/Dalje-et/ProbotTestApp/branches/master/protection"
+  },
+  {
+    "name": "release-152",
+    "commit": {
+      "sha": "142290146383f236c8e7e3f16bca2b90d97b3d4c",
+      "url": "https://api.github.com/repos/Dalje-et/ProbotTestApp/commits/142290146383f236c8e7e3f16bca2b90d97b3d4c"
+    },
+    "protected": "false",
+    "protection": {
+      "enabled": false,
+      "required_status_checks": ""
+    },
+    "protection_url": "https://api.github.com/repos/Dalje-et/ProbotTestApp/branches/master/protection"
+  }
+]
