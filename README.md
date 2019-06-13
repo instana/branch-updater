@@ -10,6 +10,9 @@ npm install
 
 # Run the bot
 npm start
+
+# Run test
+npm test
 ```
 
 ## Contributing

@@ -29,7 +29,29 @@ module.exports = app => {
       return
     }
 
-    const base = context.payload.repository.default_branch
+    const allBranches = await context.github.paginate(
+      context.github.repos.listBranches(context.repo()),
+      res => res.data
+    )
+
+    let releaseBranches = allBranches
+    // only get release branches
+      .filter(branch => isBranchWhichShouldBeMergedIntoDefaultBranch(branch.name))
+      // sort branches alphabetically
+      .sort((a, b) => a.name.localeCompare(b.name))
+
+    let base = null
+    for (let i = 0; i < releaseBranches.length; i++) {
+      if (branch === releaseBranches[i].name) {
+        if (i === releaseBranches.length - 1) {
+          base = context.payload.repository.default_branch
+          break
+        } else {
+          base = releaseBranches[i + 1].name
+          break
+        }
+      }
+    }
 
     try {
       await context.github.pullRequests.create({
