@@ -18,11 +18,11 @@ Merge `{{head}}` into `{{base}}`.
 # Manual Merge Guidance
 
 ```shell
-git checkout {{head}}
-git pull origin {{head}}
-git checkout {{base}}
-git pull origin {{base}}
-git merge {{head}}
+git checkout `{{head}}`
+git pull origin `{{head}}`
+git checkout `{{base}}`
+git pull origin `{{base}}`
+git merge `{{head}}`
 ```
 
 # Note
