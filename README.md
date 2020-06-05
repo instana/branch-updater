@@ -15,6 +15,28 @@ npm start
 npm test
 ```
 
+### Deploy to AWS Lambda
+
+We're using [serverless](https://www.serverless.com/) for the hard work.
+
+```sh
+# Install serverless
+## via npm
+npm install -g serverless
+
+## via Homebrew
+brew install serverless
+
+# Install dependencies
+npm install
+
+# Configure serverless: You will need AWS credentials in this step
+serverless config
+
+# Deploy stack
+serverless deploy
+```
+
 ## Contributing
 
 If you have suggestions for how branch-updater could be improved, or want to report a bug, open an issue! We'd love all and any contributions.
