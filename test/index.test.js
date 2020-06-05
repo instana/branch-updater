@@ -75,13 +75,13 @@ function getPullRequestPayload (base, head) {
   result.head = head
   result.title = `Update ${base} with changes from ${head}`
   result.body = description
-  let bodyHead = '`' + head + '`'
-  let bodyBase = '`' + base + '`'
-  result.body = result.body.replace('`{{head}}`', bodyHead)
-  result.body = result.body.replace('`{{head}}`', bodyHead)
-  result.body = result.body.replace('`{{base}}`', bodyBase)
-  result.body = result.body.replace('`{{base}}`', bodyBase)
+  result.body = replaceAll(result.body, '{{head}}', head)
+  result.body = replaceAll(result.body, '{{base}}', base)
   return result
+}
+
+function replaceAll (str, regexp, newSubstr) {
+  return str.replace(new RegExp(regexp, 'g'), newSubstr)
 }
 
 function getPushPayload (branchName) {
