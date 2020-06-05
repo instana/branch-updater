@@ -28,6 +28,9 @@
     "nock": "^13.0.4",
     "nodemon": "^1.17.2",
     "smee-client": "^1.1.0",
+    "serverless": "^1.72.0",
+    "serverless-offline": "^6.4.0",
+    "serverless-offline-ssm": "^5.0.1",
     "standard": "^12.0.1"
   },
   "engines": {
