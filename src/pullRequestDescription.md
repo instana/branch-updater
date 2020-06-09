@@ -13,7 +13,7 @@ Merge `{{head}}` into `{{base}}`.
 
 # Who
 
-👋 This is a message from your helpful GitHub App [branch-updater](https://github.com/instana/branch-updater).*
+*👋 This is a message from your helpful GitHub App [branch-updater](https://github.com/instana/branch-updater).*
 
 # Manual Merge Guidance
 
@@ -24,6 +24,35 @@ git checkout {{base}}
 git pull origin {{base}}
 git merge {{head}}
 ```
+
+Now resolve the conflicts locally.
+
+```
+# Edit files to resolve all conflicts:
+git add .
+git commit
+```
+
+*Please take care that these changes actually land in `{{base}}` as quickly as possible, so the next person
+that needs to merge changes from `{{head}}` to `{{base}}` does not encounter the same conflicts that you just resolved.*
+
+In case you can push to `{{base}}` directly:
+
+```
+git push
+```
+
+Depending on the repository and target branch, direct pushes to `{{base}}` might be forbidden. In that case, you need to
+create another branch (based on `{{base}}`) and a corresponding PR:
+
+```
+git checkout -b resolve-conflicts-{{head}}-{{base}}
+git push -u origin resolve-conflicts-{{head}}-{{base}}
+# The command line output of the git push command will provide a URL to conveniently create the PR.
+```
+
+Take care that this PR is merged into `{{base}}` as
+soon as possible (you might be able to merge it yourself once the required checks have completed).
 
 # Note
 
