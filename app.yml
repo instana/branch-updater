@@ -1,10 +1,12 @@
-name: branch-updater
+name: branching-strategy
 url: https://github.com/instana/branch-updater
-description: A GitHub App which ensures that your main development branch is up to date.
+description: Instana specific bot which supports our release/develop branches strategy
 public: false
 default_events:
   - push
+  - status
 default_permissions:
-  contents: read
+  contents: write
   metadata: read
   pull_requests: write
+  statuses: read

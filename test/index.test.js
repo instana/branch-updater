@@ -1,14 +1,17 @@
+const { Probot, ProbotOctokit } = require('probot')
 const nock = require('nock')
+const path = require('path')
+const fs = require('fs')
+
 // Requiring our app implementation
-const myProbotApp = require('../src')
-const { Probot } = require('probot')
+const branchUpdater = require('../src')
+
 // Requiring our fixtures
 const pushTemplate = require('./fixtures/push-template')
 const branches = require('./fixtures/branches')
 const pullRequestTemplate = require('./fixtures/pull-request-template')
+
 // Get pull request description
-const path = require('path')
-const fs = require('fs')
 const description = fs.readFileSync(path.join('src', 'pullRequestDescription.md'), { encoding: 'utf8' })
 
 nock.disableNetConnect()
@@ -17,11 +20,18 @@ describe('Branch-Updater App', () => {
   let probot
 
   beforeEach(() => {
-    probot = new Probot({})
-    // Load our app into probot
-    const app = probot.load(myProbotApp)
-    // just return a test token
-    app.app = () => 'test'
+    nock.disableNetConnect()
+
+    probot = new Probot({
+      githubToken: 'test',
+      // Disable throttling & retrying requests for easier testing
+      Octokit: ProbotOctokit.defaults({
+        retry: { enabled: false },
+        throttle: { enabled: false }
+      })
+    })
+
+    branchUpdater({ app: probot })
   })
 
   test('push to release-147 branch creates PR for release-149', async () => {
