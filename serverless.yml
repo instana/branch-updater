@@ -1,0 +1,36 @@
+service: instana-branch-updater
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: us-west-2
+  memorySize: 128
+  stage: prod
+
+package:
+  include:
+    - src/**
+    - handler.js
+
+functions:
+  branch-updater:
+    handler: handler.probot
+    events:
+      - httpApi:
+          method: GET
+          path: /ping
+      - httpApi:
+          method: POST
+          path: /webhook
+    environment:
+      APP_ID: ${ssm:github.branch-updater.app-id~true}
+      PRIVATE_KEY: ${ssm:github.branch-updater.private-key~true}
+      WEBHOOK_SECRET: ${ssm:github.branch-updater.webhook-secret~true}
+      PR_APPROVAL_PERSONAL_ACCESS_TOKEN: ${ssm:github.branch-updater.pr_approval_personal_access_token~true}
+
+plugins:
+  - serverless-offline
+  - serverless-offline-ssm
+custom:
+  serverless-offline-ssm:
+    stages:
+      - offline
