@@ -27,6 +27,7 @@ functions:
       APP_ID: ${ssm:github.branch-updater.app-id~true}
       PRIVATE_KEY: ${ssm:github.branch-updater.private-key~true}
       WEBHOOK_SECRET: ${ssm:github.branch-updater.webhook-secret~true}
+      PR_APPROVAL_PERSONAL_ACCESS_TOKEN: ${ssm:github.branch-updater.pr_approval_personal_access_token~true}
 
 plugins:
   - serverless-offline
