@@ -20,21 +20,15 @@ npm test
 We're using [serverless](https://www.serverless.com/) for the hard work.
 
 ```sh
-# Install serverless
-## via npm
-npm install -g serverless
-
-## via Homebrew
-brew install serverless
-
 # Install dependencies
 npm install
 
 # Configure serverless: You will need AWS credentials in this step
-serverless config
+# See: https://www.serverless.com/framework/docs/providers/aws/guide/credentials/
+./node_modules/.bin/serverless config credentials -p aws -k "{{ACCESS_KEY_ID}}" -s "{{SECRET_ACCESS_KEY}}"
 
 # Deploy stack
-serverless deploy
+./node_modules/.bin/serverless deploy
 ```
 
 ## Contributing
