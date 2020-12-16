@@ -5,6 +5,7 @@ provider:
   region: us-west-2
   memorySize: 128
   stage: prod
+  timeout: 30
 
 package:
   include:
