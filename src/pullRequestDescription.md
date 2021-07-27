@@ -24,7 +24,7 @@ git pull origin {{base}}
 git merge {{head}}
 ```
 
-Now resolve the conflicts locally.
+**Now resolve the conflicts locally.** Do not create a new branch at this point. By creating a new branch at this point, you would accidentally leave the git merge mode.
 
 ```
 # Edit files to resolve all conflicts:
