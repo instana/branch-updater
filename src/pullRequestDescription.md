@@ -43,6 +43,8 @@ git push
 Depending on the repository and target branch, direct pushes to `{{base}}` might be forbidden. In that case, you need to create another branch (based on `{{base}}`) and a corresponding PR:
 
 ```
+# BEWARE: You need to have resolved the conflicts already and created the merge commit
+# `git log` should say `Merge: <parent sha 1> <parent sha 2>`)
 git checkout -b resolve-conflicts-{{head}}-{{base}}
 git push -u origin resolve-conflicts-{{head}}-{{base}}
 # The command line output of the git push command will provide a URL to conveniently create the PR.
