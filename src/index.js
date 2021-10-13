@@ -16,6 +16,9 @@ module.exports = ({ app }) => {
   let prApprovalOctokit
   if (process.env.PR_APPROVAL_PERSONAL_ACCESS_TOKEN) {
     prApprovalOctokit = new ProbotOctokit({
+      baseUrl: process.env.GHE_HOST
+        ? `${process.env.GHE_PROTOCOL || "https"}://${process.env.GHE_HOST}/api/v3`
+        : "https://api.github.com",
       auth: {
         token: process.env.PR_APPROVAL_PERSONAL_ACCESS_TOKEN
       }
