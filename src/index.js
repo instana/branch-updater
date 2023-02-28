@@ -111,6 +111,46 @@ async function onPush (context, prApprovalOctokit) {
     }
   }
 
+  let pull = await findPullRequest(context)
+  if (!pull) {
+    const response = await createPull(base, branch, context)
+    if (response && response.status === 201 && prApprovalOctokit) {
+      await approvePull(response.data.number, context, prApprovalOctokit)
+    }
+  } else {
+    await approvePull(pull.number, context, prApprovalOctokit)
+  }
+}
+
+function getBranch (ref) {
+  if (!ref.startsWith(branchReferencePrefix)) {
+    return null
+  }
+
+  return ref.substring(branchReferencePrefix.length)
+}
+
+function isReleaseBranch (branch) {
+  return changeSourceRegEx.test(branch)
+}
+
+async function approvePull (pullNumber, context, prApprovalOctokit) {
+  if (!prApprovalOctokit) return
+
+  try {
+    await prApprovalOctokit.pulls.createReview({
+      owner: context.payload.repository.owner.name,
+      repo: context.payload.repository.name,
+      pull_number: pullNumber,
+      event: 'APPROVE',
+      comments: []
+    })
+  } catch (e) {
+    context.log.error(`Failed to approve the created PR: ${e}`)
+  }
+}
+
+async function createPull (base, branch, context) {
   let pullCreationResponse
   try {
     pullCreationResponse = await context.octokit.pulls.create({
@@ -127,36 +167,11 @@ async function onPush (context, prApprovalOctokit) {
   } catch (e) {
     const isIgnorableError = e.status === 422 && (
       e.message.indexOf('No commits between') !== -1 ||
-        e.message.indexOf('A pull request already exists for') !== -1)
+      e.message.indexOf('A pull request already exists for') !== -1)
     if (!isIgnorableError) {
       context.log.error(`Failed to create PR: ${e}`)
       throw e
     }
   }
-
-  if (pullCreationResponse && pullCreationResponse.status === 201 && prApprovalOctokit) {
-    try {
-      await prApprovalOctokit.pulls.createReview({
-        owner: context.payload.repository.owner.name,
-        repo: context.payload.repository.name,
-        pull_number: pullCreationResponse.data.number,
-        event: 'APPROVE',
-        comments: []
-      })
-    } catch (e) {
-      context.log.error(`Failed to approve the created PR: ${e}`)
-    }
-  }
-}
-
-function getBranch (ref) {
-  if (!ref.startsWith(branchReferencePrefix)) {
-    return null
-  }
-
-  return ref.substring(branchReferencePrefix.length)
-}
-
-function isReleaseBranch (branch) {
-  return changeSourceRegEx.test(branch)
+  return pullCreationResponse
 }
