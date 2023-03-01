@@ -1,7 +1,3 @@
-if (process.env.NODE_ENV === 'production') {
-  require('@instana/collector')()
-}
-
 const { ProbotOctokit } = require('probot')
 const path = require('path')
 const fs = require('fs')
