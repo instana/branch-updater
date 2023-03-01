@@ -1,6 +1,8 @@
 # branch-updater
 
-> A GitHub App which ensures that your main development branch is up to date.
+A GitHub App which ensures that your main development branch is up to date.
+
+Note: Documentation on the Instana-/IBM-specific deployments of this app is available at <https://github.ibm.com/instana/technical-documentation/blob/master/branch-updater/branch-updater.md> (IBM internal link).
 
 ## Setup
 
