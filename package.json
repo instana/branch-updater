@@ -29,7 +29,7 @@
     "nodemon": "^1.17.2",
     "serverless": "^2.15.0",
     "serverless-offline": "^6.8.0",
-    "serverless-offline-ssm": "^5.2.0",
+    "serverless-offline-ssm": "^6.2.0",
     "smee-client": "^1.1.0",
     "standard": "^12.0.1"
   },
