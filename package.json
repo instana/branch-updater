@@ -21,14 +21,14 @@
   },
   "dependencies": {
     "@probot/serverless-lambda": "^1.0.2",
-    "probot": "^10.19.0"
+    "probot": "^12.3.0"
   },
   "devDependencies": {
     "jest": "^26.4.0",
     "nock": "^13.2.4",
     "nodemon": "^1.17.2",
     "serverless": "^2.15.0",
-    "serverless-offline": "^6.8.0",
+    "serverless-offline": "^12.0.4",
     "serverless-offline-ssm": "^5.2.0",
     "smee-client": "^1.1.0",
     "standard": "^12.0.1"
