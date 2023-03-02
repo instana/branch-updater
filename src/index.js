@@ -7,7 +7,7 @@ const changeSourceRegEx = /^release-\d+$/i
 const branchReferencePrefix = 'refs/heads/'
 
 module.exports = ({ app }) => {
-  app.log.info('branch-updater started!')
+  app.log.info(`branch-updater started, using ${process.env.GHE_HOST || 'api.github.com'}.`)
 
   let prApprovalOctokit
   if (process.env.PR_APPROVAL_PERSONAL_ACCESS_TOKEN) {
