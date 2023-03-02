@@ -40,6 +40,7 @@ async function onStatus (context) {
 
 // Can we more efficiently find the PR? :)
 async function findPullRequest (context) {
+  const sha = context.payload.sha
   const allPulls = await context.octokit.paginate(
     context.octokit.pulls.list,
     {
@@ -49,10 +50,11 @@ async function findPullRequest (context) {
   )
 
   for (const pull of allPulls) {
-    if (pull.head.sha === context.payload.sha) {
+    if (pull.head.sha === sha) {
       return pull
     }
   }
+  context.log.info(`Could not find existing pull request for ${sha}`)
 }
 
 async function merge (context, pull) {
@@ -74,13 +76,14 @@ async function onPush (context, prApprovalOctokit) {
   }
 
   const branch = getBranch(context.payload.ref)
+  context.log.info(`Processing push on branch ${branch}`)
   if (!branch) {
     context.log.warn(`Could not identify branch to which the changes were pushed. Retrieved ${context.payload.ref}`)
     return
   }
 
   if (!isReleaseBranch(branch)) {
-    context.log.info(`Branch is not one of the potential change sources. Got ${branch}.`)
+    context.log.info(`Branch is not one of the potential change sources.`)
     return
   }
 
@@ -110,7 +113,7 @@ async function onPush (context, prApprovalOctokit) {
   let pull = await findPullRequest(context)
   if (!pull) {
     const response = await createPull(base, branch, context)
-    if (response && response.status === 201 && prApprovalOctokit) {
+    if (response && response.status === 201) {
       await approvePull(response.data.number, context, prApprovalOctokit)
     }
   } else {
@@ -131,7 +134,11 @@ function isReleaseBranch (branch) {
 }
 
 async function approvePull (pullNumber, context, prApprovalOctokit) {
-  if (!prApprovalOctokit) return
+  context.log.info(`Attempting to approve PR ${pullNumber}`)
+  if (!prApprovalOctokit) {
+    context.log.error('Missing approval octokit, unable to approve pull request')
+    return
+  }
 
   try {
     await prApprovalOctokit.pulls.createReview({
@@ -147,6 +154,7 @@ async function approvePull (pullNumber, context, prApprovalOctokit) {
 }
 
 async function createPull (base, branch, context) {
+  context.log.info(`Attempting to create pull request from ${branch} to ${base}`)
   let pullCreationResponse
   try {
     pullCreationResponse = await context.octokit.pulls.create({
@@ -167,6 +175,8 @@ async function createPull (base, branch, context) {
     if (!isIgnorableError) {
       context.log.error(`Failed to create PR: ${e}`)
       throw e
+    } else {
+      context.log.info(`Ignoring failure to create PR: ${e}`)
     }
   }
   return pullCreationResponse
