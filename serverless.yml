@@ -14,7 +14,7 @@ package:
 
 functions:
   branch-updater:
-    handler: handler.probot
+    handler: instana-aws-lambda-auto-wrap.handler
     events:
       - httpApi:
           method: GET
@@ -23,15 +23,23 @@ functions:
           method: POST
           path: /webhook
     environment:
+      LAMBDA_HANDLER: handler.probot
       APP_ID: ${ssm:github.branch-updater.app-id~true}
       PRIVATE_KEY: ${ssm:github.branch-updater.private-key~true}
       WEBHOOK_SECRET: ${ssm:github.branch-updater.webhook-secret~true}
       PR_APPROVAL_PERSONAL_ACCESS_TOKEN: ${ssm:github.branch-updater.pr_approval_personal_access_token~true}
+      INSTANA_ENDPOINT_URL: ${ssm:github.branch-updater.instana-endpoint-url~true}
+      INSTANA_AGENT_KEY: ${ssm:github.branch-updater.instana-agent-key~true}
+      NODE_PATH: $NODE_PATH:/opt/nodejs/node_modules
+    layers:
+      - arn:aws:lambda:us-west-2:410797082306:layer:instana-nodejs:132
 
 plugins:
   - serverless-offline
   - serverless-offline-ssm
 custom:
+  serverless-offline:
+    useDocker: true
   serverless-offline-ssm:
     stages:
       - offline
