@@ -1,4 +1,4 @@
-FROM node:12.18.0
+FROM node:18.19.1
 COPY . /opt/branch-updater
 WORKDIR /opt/branch-updater
 RUN npm install --production

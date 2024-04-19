@@ -1,7 +1,7 @@
 service: instana-branch-updater
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs18.x
   region: us-west-2
   memorySize: 128
   stage: prod
@@ -24,12 +24,12 @@ functions:
           path: /webhook
     environment:
       LAMBDA_HANDLER: handler.probot
-      APP_ID: ${ssm:github.branch-updater.app-id~true}
-      PRIVATE_KEY: ${ssm:github.branch-updater.private-key~true}
-      WEBHOOK_SECRET: ${ssm:github.branch-updater.webhook-secret~true}
-      PR_APPROVAL_PERSONAL_ACCESS_TOKEN: ${ssm:github.branch-updater.pr_approval_personal_access_token~true}
-      INSTANA_ENDPOINT_URL: ${ssm:github.branch-updater.instana-endpoint-url~true}
-      INSTANA_AGENT_KEY: ${ssm:github.branch-updater.instana-agent-key~true}
+      APP_ID: ${github.branch-updater.app-id~true}
+      PRIVATE_KEY: ${github.branch-updater.private-key~true}
+      WEBHOOK_SECRET: ${github.branch-updater.webhook-secret~true}
+      PR_APPROVAL_PERSONAL_ACCESS_TOKEN: ${github.branch-updater.pr_approval_personal_access_token~true}
+      INSTANA_ENDPOINT_URL: ${github.branch-updater.instana-endpoint-url~true}
+      INSTANA_AGENT_KEY: ${github.branch-updater.instana-agent-key~true}
       NODE_PATH: $NODE_PATH:/opt/nodejs/node_modules
     layers:
       - arn:aws:lambda:us-west-2:410797082306:layer:instana-nodejs:132
