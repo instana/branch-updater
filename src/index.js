@@ -3,7 +3,7 @@ const path = require('path')
 const fs = require('fs')
 
 const description = fs.readFileSync(path.join(__dirname, 'pullRequestDescription.md'), { encoding: 'utf8' })
-const changeSourceRegEx = /^release-(?:\d+|v?\d\.\d\.x)$/i
+const changeSourceRegEx = /^release-(?:\d+|v?\d+\.\d+\.x)$/i
 const branchReferencePrefix = 'refs/heads/'
 
 module.exports = ({ app }) => {
@@ -83,7 +83,7 @@ async function onPush (context, prApprovalOctokit) {
   }
 
   if (!isReleaseBranch(branch)) {
-    context.log.info(`Branch is not one of the potential change sources.`)
+    context.log.info('Branch is not one of the potential change sources.')
     return
   }
 
@@ -93,7 +93,7 @@ async function onPush (context, prApprovalOctokit) {
     res => res.data.map(branch => branch.name)
   )
 
-  let releaseBranches = allBranches
+  const releaseBranches = allBranches
     .filter(isReleaseBranch)
     .sort((a, b) => a.localeCompare(b))
 
@@ -110,7 +110,7 @@ async function onPush (context, prApprovalOctokit) {
     }
   }
 
-  let pull = await findPullRequest(context)
+  const pull = await findPullRequest(context)
   if (!pull) {
     const response = await createPull(base, branch, context)
     if (response && response.status === 201) {

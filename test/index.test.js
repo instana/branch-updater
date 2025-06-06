@@ -119,7 +119,7 @@ describe('Branch-Updater App', () => {
 })
 
 function getPullRequestPayload (base, head) {
-  let result = pullRequestTemplate
+  const result = pullRequestTemplate
   result.base = base
   result.head = head
   result.title = `Update ${base} with changes from ${head}`
@@ -134,7 +134,7 @@ function replaceAll (str, regexp, newSubstr) {
 }
 
 function getPushPayload (branchName) {
-  let result = pushTemplate
+  const result = pushTemplate
   result.ref = 'refs/heads/' + branchName
   return result
 }
