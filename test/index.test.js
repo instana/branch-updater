@@ -8,7 +8,9 @@ const branchUpdater = require('../src')
 
 // Requiring our fixtures
 const pushTemplate = require('./fixtures/push-template')
-const branches = require('./fixtures/branches')
+const branchesWithInteger2 = require('./fixtures/branches-with-integer')
+const branchesSemverPatch = require('./fixtures/branches-semver-patch')
+const branchesSemverRelease = require('./fixtures/branches-semver-release')
 const pullRequestTemplate = require('./fixtures/pull-request-template')
 
 // Get pull request description
@@ -44,7 +46,7 @@ describe('Branch-Updater App', () => {
 
     nock('https://api.github.com')
       .get('/repos/testUser/repoName/branches')
-      .reply(200, branches)
+      .reply(200, branchesWithInteger2)
 
     nock('https://api.github.com')
       .post('/app/installations/2/access_tokens')
@@ -70,7 +72,7 @@ describe('Branch-Updater App', () => {
 
     nock('https://api.github.com')
       .get('/repos/testUser/repoName/branches')
-      .reply(200, branches)
+      .reply(200, branchesWithInteger2)
 
     nock('https://api.github.com')
       .post('/app/installations/2/access_tokens')
@@ -90,7 +92,7 @@ describe('Branch-Updater App', () => {
   })
 
   test('push to release-152 with an existing PR is re-approved', async () => {
-    const sha = branches.find(b => b.name === 'release-152').commit.sha
+    const sha = branchesWithInteger2.find(b => b.name === 'release-152').commit.sha
     const payload = { ...getPushPayload('release-152'), sha }
 
     nock('https://api.github.com')
@@ -99,7 +101,7 @@ describe('Branch-Updater App', () => {
 
     nock('https://api.github.com')
       .get('/repos/testUser/repoName/branches')
-      .reply(200, branches)
+      .reply(200, branchesWithInteger2)
 
     nock('https://api.github.com')
       .post('/app/installations/2/access_tokens')
@@ -114,6 +116,118 @@ describe('Branch-Updater App', () => {
       .reply(200)
 
     // Receive a webhook event
+    await probot.receive({ name: 'push', payload })
+  })
+
+  test('push to release-2 branch creates PR for release-10 (not release-147)', async () => {
+    // This test verifies the fix for numeric version comparison
+    // Previously, string comparison would incorrectly order: release-147 < release-2
+    // Now with numeric comparison: release-2 < release-10 < release-147
+    nock('https://api.github.com')
+      .get('/repos/testUser/repoName/pulls?state=open')
+      .reply(200, [])
+
+    nock('https://api.github.com')
+      .get('/repos/testUser/repoName/branches')
+      .reply(200, branchesWithInteger2)
+
+    nock('https://api.github.com')
+      .post('/app/installations/2/access_tokens')
+      .reply(200, { token: 'test' })
+
+    // Test that a pull request is created with base release-10 (not release-147)
+    nock('https://api.github.com')
+      .post('/repos/testUser/repoName/pulls', (body) => {
+        expect(body).toMatchObject(getPullRequestPayload('release-10', 'release-2'))
+        return true
+      })
+      .reply(200)
+
+    // Receive a webhook event
+    const payload = getPushPayload('release-2')
+    await probot.receive({ name: 'push', payload })
+  })
+
+  test('push to patch-v1.9.x branch creates PR for patch-v1.10.x (not patch-v1.2.x)', async () => {
+    // This test verifies semantic version comparison
+    // Previously, string comparison would incorrectly order: patch-v1.10.x < patch-v1.2.x < patch-v1.9.x
+    // Now with semver comparison: patch-v1.2.x < patch-v1.9.x < patch-v1.10.x
+    nock('https://api.github.com')
+      .get('/repos/testUser/repoName/pulls?state=open')
+      .reply(200, [])
+
+    nock('https://api.github.com')
+      .get('/repos/testUser/repoName/branches')
+      .reply(200, branchesSemverPatch)
+
+    nock('https://api.github.com')
+      .post('/app/installations/2/access_tokens')
+      .reply(200, { token: 'test' })
+
+    // Test that a pull request is created with base patch-v1.10.x (not patch-v1.2.x)
+    nock('https://api.github.com')
+      .post('/repos/testUser/repoName/pulls', (body) => {
+        expect(body).toMatchObject(getPullRequestPayload('patch-v1.10.x', 'patch-v1.9.x'))
+        return true
+      })
+      .reply(200)
+
+    // Receive a webhook event
+    const payload = getPushPayload('patch-v1.9.x')
+    await probot.receive({ name: 'push', payload })
+  })
+
+  test('push to release-1.10.x branch creates PR for release-2.0.x', async () => {
+    // Test semantic version comparison across major versions
+    nock('https://api.github.com')
+      .get('/repos/testUser/repoName/pulls?state=open')
+      .reply(200, [])
+
+    nock('https://api.github.com')
+      .get('/repos/testUser/repoName/branches')
+      .reply(200, branchesSemverRelease)
+
+    nock('https://api.github.com')
+      .post('/app/installations/2/access_tokens')
+      .reply(200, { token: 'test' })
+
+    // Test that a pull request is created with base release-2.0.x
+    nock('https://api.github.com')
+      .post('/repos/testUser/repoName/pulls', (body) => {
+        expect(body).toMatchObject(getPullRequestPayload('release-2.0.x', 'release-1.10.x'))
+        return true
+      })
+      .reply(200)
+
+    // Receive a webhook event
+    const payload = getPushPayload('release-1.10.x')
+    await probot.receive({ name: 'push', payload })
+  })
+
+  test('push to release-2.0.x (last semver branch) creates PR for master', async () => {
+    // Test that the last semantic version branch merges to master
+    nock('https://api.github.com')
+      .get('/repos/testUser/repoName/pulls?state=open')
+      .reply(200, [])
+
+    nock('https://api.github.com')
+      .get('/repos/testUser/repoName/branches')
+      .reply(200, branchesSemverRelease)
+
+    nock('https://api.github.com')
+      .post('/app/installations/2/access_tokens')
+      .reply(200, { token: 'test' })
+
+    // Test that a pull request is created with base master
+    nock('https://api.github.com')
+      .post('/repos/testUser/repoName/pulls', (body) => {
+        expect(body).toMatchObject(getPullRequestPayload('master', 'release-2.0.x'))
+        return true
+      })
+      .reply(200)
+
+    // Receive a webhook event
+    const payload = getPushPayload('release-2.0.x')
     await probot.receive({ name: 'push', payload })
   })
 })

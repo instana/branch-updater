@@ -1,9 +1,9 @@
 const { ProbotOctokit } = require('probot')
 const path = require('path')
 const fs = require('fs')
+const { changeSourceRegEx, compareBranches } = require('./version-utils')
 
 const description = fs.readFileSync(path.join(__dirname, 'pullRequestDescription.md'), { encoding: 'utf8' })
-const changeSourceRegEx = /^release-(?:\d+|v?\d+\.\d+\.x)$/i
 const branchReferencePrefix = 'refs/heads/'
 
 module.exports = ({ app }) => {
@@ -95,7 +95,7 @@ async function onPush (context, prApprovalOctokit) {
 
   const releaseBranches = allBranches
     .filter(isReleaseBranch)
-    .sort((a, b) => a.localeCompare(b))
+    .sort(compareBranches)
 
   let base = null
   for (let i = 0; i < releaseBranches.length; i++) {
