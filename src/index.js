@@ -1,7 +1,7 @@
 const { ProbotOctokit } = require('probot')
 const path = require('path')
 const fs = require('fs')
-const { changeSourceRegEx, compareBranches } = require('./version-utils')
+const { changeSourceRegEx, compareBranches, extractVersion } = require('./version-utils')
 
 const description = fs.readFileSync(path.join(__dirname, 'pullRequestDescription.md'), { encoding: 'utf8' })
 const branchReferencePrefix = 'refs/heads/'
@@ -93,8 +93,30 @@ async function onPush (context, prApprovalOctokit) {
     res => res.data.map(branch => branch.name)
   )
 
+  // Determine the branch type (patch or release) and version type (integer or semver) of the current branch
+  const branchType = branch.toLowerCase().startsWith('patch-') ? 'patch' : 'release'
+  const currentVersion = extractVersion(branch)
+  const versionType = currentVersion ? currentVersion.versionType : null
+
+  // Filter branches to only include the same type and version format as the current branch
+  // This ensures we never compare:
+  // - patch branches with release branches
+  // - integer versions with semver versions
   const releaseBranches = allBranches
     .filter(isReleaseBranch)
+    .filter(b => {
+      const bType = b.toLowerCase().startsWith('patch-') ? 'patch' : 'release'
+      if (bType !== branchType) {
+        return false
+      }
+
+      const bVersion = extractVersion(b)
+      if (!bVersion || !versionType) {
+        return false
+      }
+
+      return bVersion.versionType === versionType
+    })
     .sort(compareBranches)
 
   let base = null
