@@ -41,46 +41,53 @@ describe('Version Comparison', () => {
   describe('extractVersion', () => {
     test('extracts integer version from release branch', () => {
       expect(extractVersion('release-147')).toEqual({
-        type: 'integer',
+        branchType: 'release',
+        versionType: 'integer',
         value: 147
       })
     })
 
     test('extracts integer version from patch branch', () => {
       expect(extractVersion('patch-42')).toEqual({
-        type: 'integer',
+        branchType: 'patch',
+        versionType: 'integer',
         value: 42
       })
     })
 
     test('extracts semver from release branch with v prefix', () => {
       expect(extractVersion('release-v1.2.x')).toEqual({
-        type: 'semver',
+        branchType: 'release',
+        versionType: 'semver',
         value: { major: 1, minor: 2 }
       })
     })
 
     test('extracts semver from release branch without v prefix', () => {
       expect(extractVersion('release-1.2.x')).toEqual({
-        type: 'semver',
+        branchType: 'release',
+        versionType: 'semver',
         value: { major: 1, minor: 2 }
       })
     })
 
     test('extracts semver from patch branch', () => {
       expect(extractVersion('patch-v3.5.x')).toEqual({
-        type: 'semver',
+        branchType: 'patch',
+        versionType: 'semver',
         value: { major: 3, minor: 5 }
       })
     })
 
     test('handles case insensitive branch names', () => {
       expect(extractVersion('RELEASE-100')).toEqual({
-        type: 'integer',
+        branchType: 'release',
+        versionType: 'integer',
         value: 100
       })
       expect(extractVersion('PATCH-V2.1.X')).toEqual({
-        type: 'semver',
+        branchType: 'patch',
+        versionType: 'semver',
         value: { major: 2, minor: 1 }
       })
     })
@@ -146,10 +153,29 @@ describe('Version Comparison', () => {
       })
     })
 
-    describe('mixed version types', () => {
-      test('integer versions come before semver versions', () => {
-        expect(compareBranches('release-100', 'release-v1.0.x')).toBeLessThan(0)
-        expect(compareBranches('release-v1.0.x', 'release-100')).toBeGreaterThan(0)
+    describe('cross-type comparison prevention', () => {
+      test('throws error when comparing patch with release branches', () => {
+        expect(() => compareBranches('patch-1', 'release-1')).toThrow('Cannot compare branches of different types')
+        expect(() => compareBranches('release-100', 'patch-50')).toThrow('Cannot compare branches of different types')
+      })
+
+      test('throws error when comparing patch semver with release semver', () => {
+        expect(() => compareBranches('patch-v1.0.x', 'release-v1.0.x')).toThrow('Cannot compare branches of different types')
+      })
+
+      test('throws error when comparing integer with semver versions (release)', () => {
+        expect(() => compareBranches('release-100', 'release-v1.0.x')).toThrow('Cannot compare branches with different version formats')
+        expect(() => compareBranches('release-v1.0.x', 'release-100')).toThrow('Cannot compare branches with different version formats')
+      })
+
+      test('throws error when comparing integer with semver versions (patch)', () => {
+        expect(() => compareBranches('patch-100', 'patch-v1.0.x')).toThrow('Cannot compare branches with different version formats')
+        expect(() => compareBranches('patch-v1.0.x', 'patch-100')).toThrow('Cannot compare branches with different version formats')
+      })
+
+      test('throws error when comparing mixed types and formats', () => {
+        expect(() => compareBranches('patch-100', 'release-v1.0.x')).toThrow('Cannot compare branches of different types')
+        expect(() => compareBranches('release-v2.0.x', 'patch-50')).toThrow('Cannot compare branches of different types')
       })
     })
 
@@ -167,22 +193,43 @@ describe('Version Comparison', () => {
     })
 
     describe('sorting arrays', () => {
-      test('sorts integer versions correctly', () => {
+      test('sorts release integer versions correctly', () => {
         const branches = ['release-2', 'release-152', 'release-10', 'release-147', 'release-1']
         const sorted = branches.sort(compareBranches)
         expect(sorted).toEqual(['release-1', 'release-2', 'release-10', 'release-147', 'release-152'])
       })
 
-      test('sorts semver versions correctly', () => {
+      test('sorts patch integer versions correctly', () => {
+        const branches = ['patch-5', 'patch-100', 'patch-1', 'patch-50']
+        const sorted = branches.sort(compareBranches)
+        expect(sorted).toEqual(['patch-1', 'patch-5', 'patch-50', 'patch-100'])
+      })
+
+      test('sorts release semver versions correctly', () => {
         const branches = ['release-v1.10.x', 'release-v1.2.x', 'release-v2.1.x', 'release-v1.9.x']
         const sorted = branches.sort(compareBranches)
         expect(sorted).toEqual(['release-v1.2.x', 'release-v1.9.x', 'release-v1.10.x', 'release-v2.1.x'])
       })
 
-      test('sorts mixed versions correctly', () => {
-        const branches = ['release-v1.0.x', 'release-100', 'release-2', 'release-v2.0.x']
+      test('sorts patch semver versions correctly', () => {
+        const branches = ['patch-v2.5.x', 'patch-v1.10.x', 'patch-v1.2.x']
         const sorted = branches.sort(compareBranches)
-        expect(sorted).toEqual(['release-2', 'release-100', 'release-v1.0.x', 'release-v2.0.x'])
+        expect(sorted).toEqual(['patch-v1.2.x', 'patch-v1.10.x', 'patch-v2.5.x'])
+      })
+
+      test('cannot sort array with mixed branch types', () => {
+        const branches = ['release-1', 'patch-1', 'release-2']
+        expect(() => branches.sort(compareBranches)).toThrow('Cannot compare branches of different types')
+      })
+
+      test('cannot sort array with mixed version formats (release)', () => {
+        const branches = ['release-v1.0.x', 'release-100', 'release-2', 'release-v2.0.x']
+        expect(() => branches.sort(compareBranches)).toThrow('Cannot compare branches with different version formats')
+      })
+
+      test('cannot sort array with mixed version formats (patch)', () => {
+        const branches = ['patch-v1.0.x', 'patch-50', 'patch-1', 'patch-v2.0.x']
+        expect(() => branches.sort(compareBranches)).toThrow('Cannot compare branches with different version formats')
       })
     })
   })
